@@ -90,7 +90,7 @@ function menu_buttons() {
       restart_box.style.height = "70px";
    }
    document.querySelector(".buttons_block").append(restart_box);
-   document.querySelector(".restart").addEventListener("click", restart_fun);
+   document.querySelector(".restart").addEventListener("click", change_dimension);
    let saved_games = document.createElement("button")
    saved_games.className = "loadgames"
    saved_games.innerHTML = "Saved Games"
@@ -121,8 +121,7 @@ const empty = {
    left: 0,
    size: 0
 };
-const cells = [];
-cells.push(empty);
+let cells = [];
 function gameDimension(n) {
    game.col = n
    if (n === 3) {
@@ -185,6 +184,7 @@ function move(index) {
       [].forEach.call(document.querySelectorAll('.cell'), function (e) {
          e.classList.add('unclickable');
       });
+      window.clearInterval(window.timerId);
       clicks.isWin = !clicks.isWin;
       document.querySelector('.pause').remove();
       menu_render();
@@ -218,6 +218,9 @@ function dragability() {
    }
 }
 function filling() {
+   cells = []
+   cells.push(empty);
+   cellSize = document.querySelector(".field").offsetWidth / game.col;
    let empty_cell = document.createElement("div");
    empty_cell.className = "empty";
    empty_cell.style.left = `${empty.left * cellSize}px`
@@ -251,9 +254,50 @@ function filling() {
          move(i);
       });
    }
+   console.log(cells)
 }
 
 timer_constructor();
+function change_dimension(){
+   let dim_block = document.createElement("div")
+   dim_block.className = "dimension__block"
+   document.querySelector(".menu").append(dim_block)
+   let saved_exit = document.createElement("div")
+   saved_exit.className = "saved__exit"
+   saved_exit.style["background-color"] = "rgba(245, 248, 52,0.2)";
+   dim_block.append(saved_exit)
+   let exit_button = document.createElement("button")
+   exit_button.className = "saved_exit_icon"
+   document.querySelector(".saved__exit").append(exit_button)
+   document.querySelector(".saved_exit_icon").addEventListener("click", () => {
+      document.querySelector(".saved__exit").remove();
+      document.querySelector(".dimension__block").remove();
+      menu_buttons()
+   })
+   let exit_icon = document.createElement("i")
+   exit_icon.className = "material-icons"
+   exit_icon.innerHTML = "backspace"
+   exit_button.append(exit_icon)
+   if (document.querySelector(".buttons_block")) document.querySelector(".buttons_block").remove();
+
+   let dim_box = document.createElement("div")
+   dim_box.classList = "dimension__box"
+   dim_block.append(dim_box)
+   for(let i=3; i<9;i++){
+      let dim = document.createElement("div")
+      dim.classList = "dimension__cell"
+      dim.innerHTML = `${i}x${i}`
+      dim.style.width = `${dim_box.offsetHeight/2}px`
+      dim.style.height = `${dim_box.offsetHeight/2}px`
+      dim.style["border-radius"] = `${dim_box.offsetHeight/4}px`
+      dim_box.append(dim)
+      dim.addEventListener("click", ()=>{
+         gameDimension(i)
+         numbers = [...Array(game.dimension).keys()]
+         restart_fun();
+      })
+   }
+}
 function restart_fun() {
    clicks.count = 0;
    if (clicks.isWin === true) clicks.isWin = !clicks.isWin
@@ -269,7 +313,7 @@ function restart_fun() {
    document.querySelector(".timer__sec").innerHTML = `0${timer.sec}`;
    document.querySelector(".timer__min").innerHTML = `0${timer.min}`;
 
-   document.querySelector(".restart").remove();
+   if(document.querySelector(".restart"))document.querySelector(".restart").remove();
    document.querySelector('.menu').remove();
    document.querySelector(".empty").remove();
    [].forEach.call(document.querySelectorAll('.cell'), function (e) {
@@ -289,7 +333,6 @@ function restart_fun() {
       e.classList.remove('unclickable');
    });
    startTimer();
-
    cleate_pause();
 };
 function savedGames() {
@@ -428,6 +471,7 @@ function showSlides(index) {
    slides[slide.index - 1].style.display = "flex"
 }
 function saved_filling(key) {
+   cells = []
    game.col = key.col;
    game.dimension = key.dimension;
    menu_stat.continue = true;
@@ -450,6 +494,7 @@ function saved_filling(key) {
    empty.left = key.empty_cell.left;
    console.log(empty.left)
    empty.top = key.empty_cell.top;
+   cells.push(empty)
    let size = document.querySelector(".field").offsetWidth / key.col;
    let empty_cell = document.createElement("div");
    empty_cell.className = "empty";
