@@ -19,7 +19,7 @@ const game = {
    dimension: 0,
    col: 0
 }
-const color = ["rgb(54, 255, 36)","rgb(142, 255, 36)","rgb(215, 255, 36)","rgb(255, 240, 36)","rgb(255, 197, 36)","rgb(255, 153, 36)","rgb(255, 105, 36)","rgb(255, 62, 36)","rgb(255, 36, 138)","rgb(255, 36, 226)"]
+const color = ["rgb(54, 255, 36)", "rgb(142, 255, 36)", "rgb(215, 255, 36)", "rgb(255, 240, 36)", "rgb(255, 197, 36)", "rgb(255, 153, 36)", "rgb(255, 105, 36)", "rgb(255, 62, 36)", "rgb(255, 36, 138)", "rgb(255, 36, 226)"]
 let drag_status;
 const dragOver = function (evt) {
    evt.preventDefault();
@@ -204,7 +204,7 @@ function move(index) {
          localStorage.setItem("best", JSON.stringify(best))
       } else {
          let check = JSON.parse(localStorage.getItem("best"))
-         check.sort((prev,next)=> {next.turns - prev.turns})
+         check.sort((prev, next) => { next.turns - prev.turns })
          if (check.length < 10) {
             let be = {
                turns: clicks.count,
@@ -243,29 +243,31 @@ function move(index) {
                   sec: timer.sec,
                   col: game.col
                }
-               check[alt.order]=be;
-            } else if (clicks.count === alt.turns){
-               if (timer.min < alt.min){
+               check[alt.order] = be;
+            } else if (clicks.count === alt.turns) {
+               if (timer.min < alt.min) {
                   let be = {
                      turns: clicks.count,
                      min: timer.min,
                      sec: timer.sec,
                      col: game.col
                   }
-                  check[alt.order]=be;
+                  check[alt.order] = be;
                   check.push(be)
                }
             }
          }
-         check.sort((prev,next)=> {next.turns - prev.turns})
+         check.sort((prev, next) => { next.turns - prev.turns })
          localStorage.setItem("best", JSON.stringify(check))
       }
       window.clearInterval(window.timerId);
       clicks.isWin = !clicks.isWin;
       document.querySelector('.pause').remove();
       menu_render();
-      if(localStorage.getItem("best")){console.log(JSON.parse(localStorage.getItem("best")).length)
-      console.log(localStorage.getItem("best"))}
+      if (localStorage.getItem("best")) {
+         console.log(JSON.parse(localStorage.getItem("best")).length)
+         console.log(localStorage.getItem("best"))
+      }
    }
 
 }
@@ -346,28 +348,28 @@ function bestList() {
    let best_list = document.createElement("div")
    best_list.className = "best__list"
    best_block.append(best_list)
-   if(localStorage.getItem("best")){
+   if (localStorage.getItem("best")) {
       let all = JSON.parse(localStorage.getItem("best"))
-      for(let i=0;i<all.length;i++){
+      for (let i = 0; i < all.length; i++) {
          let order = document.createElement("div")
          order.className = "best__order"
          order.style["background-color"] = `${color[i]}`
          best_list.append(order)
          let turns = document.createElement("span")
          turns.className = "order__turns"
-         turns.innerHTML  = `Turns: ${all[i].turns}`
+         turns.innerHTML = `Turns: ${all[i].turns}`
          order.append(turns)
          let min = document.createElement("span")
          min.className = "order__min"
-         min.innerHTML  = `Min: ${all[i].min}`
+         min.innerHTML = `Min: ${all[i].min}`
          order.append(min)
          let sec = document.createElement("span")
          sec.className = "order__sec"
-         sec.innerHTML  = `Sec: ${all[i].sec}`
+         sec.innerHTML = `Sec: ${all[i].sec}`
          order.append(sec)
          let dim = document.createElement("span")
          dim.className = "order__col"
-         dim.innerHTML  = `${all[i].col}x${all[i].col}`
+         dim.innerHTML = `${all[i].col}x${all[i].col}`
          order.append(dim)
       }
    }
@@ -418,7 +420,7 @@ function change_dimension() {
       dim.style.width = `${dim_box.offsetHeight / 2}px`
       dim.style.height = `${dim_box.offsetHeight / 2}px`
       dim.style["border-radius"] = `${dim_box.offsetHeight / 4}px`
-      dim.style["background-color"] = `${color[i-3]}`
+      dim.style["background-color"] = `${color[i - 3]}`
       dim_box.append(dim)
       dim.addEventListener("click", () => {
          gameDimension(i)
