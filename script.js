@@ -453,7 +453,7 @@ function restart_fun() {
       top: 0,
       left: 0
    });
-   //shuffle(numbers);
+   shuffle(numbers);
    empty.top = 0;
    empty.left = 0;
    filling();
