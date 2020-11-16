@@ -19,6 +19,7 @@ const game = {
    dimension: 0,
    col: 0
 }
+const color = ["rgb(54, 255, 36)","rgb(142, 255, 36)","rgb(215, 255, 36)","rgb(255, 240, 36)","rgb(255, 197, 36)","rgb(255, 153, 36)","rgb(255, 105, 36)","rgb(255, 62, 36)","rgb(255, 36, 138)","rgb(255, 36, 226)"]
 let drag_status;
 const dragOver = function (evt) {
    evt.preventDefault();
@@ -97,6 +98,12 @@ function menu_buttons() {
    saved_games.style.height = "70px"
    document.querySelector(".buttons_block").append(saved_games);
    document.querySelector(".loadgames").addEventListener("click", savedGames);
+   let best = document.createElement("button")
+   best.className = "best"
+   best.innerHTML = "Score List"
+   best.style.width = "130px"
+   document.querySelector(".buttons_block").append(best)
+   document.querySelector(".best").addEventListener("click", bestList)
    if (menu_stat.continue === true) {
       let cont_box = document.createElement("button");
       cont_box.className = "continue";
@@ -180,14 +187,85 @@ function move(index) {
    })
 
    if (isFinished) {
-      alert(`Ура ! Вы решили головоломку за ${timer.min}:${timer.sec} и ${clicks.count} шагов`);
+      let min = (timer.min < 10) ? `0${timer.min}` : `${timer.min}`;
+      let sec = (timer.sec < 10) ? `0${timer.sec}` : `${timer.sec}`;
+      alert(`Ура ! Вы решили головоломку за ${min}:${sec} и ${clicks.count} шагов`);
       [].forEach.call(document.querySelectorAll('.cell'), function (e) {
          e.classList.add('unclickable');
       });
+      if (!localStorage.getItem("best")) {
+         let best = []
+         best[0] = {
+            turns: clicks.count,
+            min: timer.min,
+            sec: timer.sec,
+            col: game.col
+         }
+         localStorage.setItem("best", JSON.stringify(best))
+      } else {
+         let check = JSON.parse(localStorage.getItem("best"))
+         check.sort((prev,next)=> {next.turns - prev.turns})
+         if (check.length < 10) {
+            let be = {
+               turns: clicks.count,
+               min: timer.min,
+               sec: timer.sec,
+               col: game.col
+            }
+            check.push(be)
+         } else {
+            let alt = {
+               min: 0,
+               sec: 0,
+               order: 0,
+               turns: 0
+            }
+            for (let i = 0; i < check.length; i++) {
+               if (i === 0) {
+                  alt.min = check[i].min;
+                  alt.sec = check[i].sec;
+                  alt.turns = check[i].turns;
+                  alt.order = i
+               }
+               else {
+                  if (check[i].turns > alt.turns) {
+                     alt.min = check[i].min;
+                     alt.sec = check[i].sec;
+                     alt.turns = check[i].turns;
+                     alt.order = i
+                  }
+               }
+            }
+            if (clicks.count < alt.turns) {
+               let be = {
+                  turns: clicks.count,
+                  min: timer.min,
+                  sec: timer.sec,
+                  col: game.col
+               }
+               check[alt.order]=be;
+            } else if (clicks.count === alt.turns){
+               if (timer.min < alt.min){
+                  let be = {
+                     turns: clicks.count,
+                     min: timer.min,
+                     sec: timer.sec,
+                     col: game.col
+                  }
+                  check[alt.order]=be;
+                  check.push(be)
+               }
+            }
+         }
+         check.sort((prev,next)=> {next.turns - prev.turns})
+         localStorage.setItem("best", JSON.stringify(check))
+      }
       window.clearInterval(window.timerId);
       clicks.isWin = !clicks.isWin;
       document.querySelector('.pause').remove();
       menu_render();
+      if(localStorage.getItem("best")){console.log(JSON.parse(localStorage.getItem("best")).length)
+      console.log(localStorage.getItem("best"))}
    }
 
 }
@@ -256,9 +334,61 @@ function filling() {
    }
    console.log(cells)
 }
-
+function bestList() {
+   document.querySelector(".buttons_block").remove();
+   let best_block = document.createElement("div")
+   best_block.className = "best__block"
+   document.querySelector(".menu").append(best_block)
+   let best_h = document.createElement("div")
+   best_h.className = "best__h"
+   best_h.innerHTML = "Score List"
+   best_block.append(best_h)
+   let best_list = document.createElement("div")
+   best_list.className = "best__list"
+   best_block.append(best_list)
+   if(localStorage.getItem("best")){
+      let all = JSON.parse(localStorage.getItem("best"))
+      for(let i=0;i<all.length;i++){
+         let order = document.createElement("div")
+         order.className = "best__order"
+         order.style["background-color"] = `${color[i]}`
+         best_list.append(order)
+         let turns = document.createElement("span")
+         turns.className = "order__turns"
+         turns.innerHTML  = `Turns: ${all[i].turns}`
+         order.append(turns)
+         let min = document.createElement("span")
+         min.className = "order__min"
+         min.innerHTML  = `Min: ${all[i].min}`
+         order.append(min)
+         let sec = document.createElement("span")
+         sec.className = "order__sec"
+         sec.innerHTML  = `Sec: ${all[i].sec}`
+         order.append(sec)
+         let dim = document.createElement("span")
+         dim.className = "order__col"
+         dim.innerHTML  = `${all[i].col}x${all[i].col}`
+         order.append(dim)
+      }
+   }
+   let best_back = document.createElement("div")
+   best_back.className = "best__back"
+   best_block.append(best_back)
+   let exit_button = document.createElement("button")
+   exit_button.className = "saved_exit_icon"
+   best_back.append(exit_button)
+   document.querySelector(".saved_exit_icon").addEventListener("click", () => {
+      document.querySelector(".best__block").remove();
+      menu_buttons()
+   })
+   let exit_icon = document.createElement("i")
+   exit_icon.className = "material-icons"
+   exit_icon.innerHTML = "backspace"
+   exit_button.append(exit_icon)
+}
 timer_constructor();
-function change_dimension(){
+function change_dimension() {
+   if (document.querySelector(".buttons_block")) document.querySelector(".buttons_block").remove();
    let dim_block = document.createElement("div")
    dim_block.className = "dimension__block"
    document.querySelector(".menu").append(dim_block)
@@ -278,20 +408,19 @@ function change_dimension(){
    exit_icon.className = "material-icons"
    exit_icon.innerHTML = "backspace"
    exit_button.append(exit_icon)
-   if (document.querySelector(".buttons_block")) document.querySelector(".buttons_block").remove();
-
    let dim_box = document.createElement("div")
    dim_box.classList = "dimension__box"
    dim_block.append(dim_box)
-   for(let i=3; i<9;i++){
+   for (let i = 3; i < 9; i++) {
       let dim = document.createElement("div")
       dim.classList = "dimension__cell"
       dim.innerHTML = `${i}x${i}`
-      dim.style.width = `${dim_box.offsetHeight/2}px`
-      dim.style.height = `${dim_box.offsetHeight/2}px`
-      dim.style["border-radius"] = `${dim_box.offsetHeight/4}px`
+      dim.style.width = `${dim_box.offsetHeight / 2}px`
+      dim.style.height = `${dim_box.offsetHeight / 2}px`
+      dim.style["border-radius"] = `${dim_box.offsetHeight / 4}px`
+      dim.style["background-color"] = `${color[i-3]}`
       dim_box.append(dim)
-      dim.addEventListener("click", ()=>{
+      dim.addEventListener("click", () => {
          gameDimension(i)
          numbers = [...Array(game.dimension).keys()]
          restart_fun();
@@ -313,7 +442,7 @@ function restart_fun() {
    document.querySelector(".timer__sec").innerHTML = `0${timer.sec}`;
    document.querySelector(".timer__min").innerHTML = `0${timer.min}`;
 
-   if(document.querySelector(".restart"))document.querySelector(".restart").remove();
+   if (document.querySelector(".restart")) document.querySelector(".restart").remove();
    document.querySelector('.menu').remove();
    document.querySelector(".empty").remove();
    [].forEach.call(document.querySelectorAll('.cell'), function (e) {
@@ -552,6 +681,7 @@ function saving_func() {
    }
 
 }
+
 function pause_fun() {
    document.querySelector('.pause').remove();
    menu_render();
