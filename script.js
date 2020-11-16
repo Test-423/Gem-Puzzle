@@ -15,6 +15,9 @@ const clicks = {
    count: 0,
    isWin: false
 }
+const volume = {
+   status: true
+}
 const game = {
    dimension: 0,
    col: 0
@@ -88,20 +91,20 @@ function menu_buttons() {
    }
    else {
       restart_box.innerHTML = "New Game";
-      restart_box.style.height = "70px";
+     // restart_box.style.height = "70px";
    }
    document.querySelector(".buttons_block").append(restart_box);
    document.querySelector(".restart").addEventListener("click", change_dimension);
    let saved_games = document.createElement("button")
    saved_games.className = "loadgames"
    saved_games.innerHTML = "Saved Games"
-   saved_games.style.height = "70px"
+   //saved_games.style.height = "70px"
    document.querySelector(".buttons_block").append(saved_games);
    document.querySelector(".loadgames").addEventListener("click", savedGames);
    let best = document.createElement("button")
    best.className = "best"
    best.innerHTML = "Score List"
-   best.style.width = "130px"
+   //best.style.width = "130px"
    document.querySelector(".buttons_block").append(best)
    document.querySelector(".best").addEventListener("click", bestList)
    if (menu_stat.continue === true) {
@@ -114,11 +117,21 @@ function menu_buttons() {
          let saving = document.createElement("button")
          saving.className = "saving"
          saving.innerHTML = "Save Game ?"
-         saving.style.height = "70px"
+         //saving.style.height = "70px"
          document.querySelector(".buttons_block").append(saving);
          document.querySelector(".saving").addEventListener("click", saving_func);
       }
    }
+   let volume_button = document.createElement("button")
+   volume_button.className = "volume"
+   volume_button.style.width = "130px"
+   //volume_button.style["font-size"] = "20px"
+   volume_button.innerHTML = (volume.status === true) ? "Volume: On" : "Volume: Off";
+   document.querySelector(".buttons_block").append(volume_button)
+   document.querySelector(".volume").addEventListener("click", () => {
+      volume.status = !volume.status
+      document.querySelector(".volume").innerHTML = (volume.status === true) ? "Volume: On" : "Volume: Off";
+   })
 }
 //const field = document.querySelector(".field");
 
@@ -154,7 +167,7 @@ function gameDimension(n) {
    }
    console.log(game.dimension)
 }
-gameDimension(5)
+gameDimension(4)
 let cellSize = document.querySelector(".field").offsetWidth / game.col;
 console.log(cellSize)
 function move(index) {
@@ -165,6 +178,11 @@ function move(index) {
    const topDif = Math.abs(empty.top - cell.top);
 
    if ((leftDif + topDif > 1)) return;
+   if (volume.status === true) {
+      let audio = new Audio;
+      audio.src = "audio/move.mp3";
+      audio.play();
+   }
    clicks.count++;
    document.querySelector(".turning").innerHTML = `Turns: ${clicks.count}`;
    //console.log(empty.left)
@@ -187,6 +205,7 @@ function move(index) {
    })
 
    if (isFinished) {
+      menu_stat.continue = false
       let min = (timer.min < 10) ? `0${timer.min}` : `${timer.min}`;
       let sec = (timer.sec < 10) ? `0${timer.sec}` : `${timer.sec}`;
       alert(`Ура ! Вы решили головоломку за ${min}:${sec} и ${clicks.count} шагов`);
@@ -244,6 +263,7 @@ function move(index) {
                   col: game.col
                }
                check[alt.order] = be;
+               check.push(be)
             } else if (clicks.count === alt.turns) {
                if (timer.min < alt.min) {
                   let be = {
@@ -455,7 +475,7 @@ function restart_fun() {
       top: 0,
       left: 0
    });
-   shuffle(numbers);
+   //shuffle(numbers);
    empty.top = 0;
    empty.left = 0;
    filling();
