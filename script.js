@@ -416,7 +416,7 @@ function change_dimension() {
    document.querySelector(".menu").append(dim_block)
    let saved_exit = document.createElement("div")
    saved_exit.className = "saved__exit"
-   saved_exit.style["background-color"] = "rgba(245, 248, 52,0.2)";
+   saved_exit.style["background-color"] = "rgba(245, 248, 52,0)";
    dim_block.append(saved_exit)
    let exit_button = document.createElement("button")
    exit_button.className = "saved_exit_icon"
