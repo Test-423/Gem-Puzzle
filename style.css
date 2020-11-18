@@ -80,7 +80,7 @@ body {
   position: absolute;
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
-  font-size: 40px;
+  font-size: 150%;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;

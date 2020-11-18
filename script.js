@@ -191,6 +191,7 @@ gameDimension(4)
 let cellSize = document.querySelector(".field").offsetWidth / game.col;
 console.log(cellSize)
 function move(index) {
+   console.log(cells)
    cellSize = document.querySelector(".field").offsetWidth / game.col;
    const cell = cells[index];
 
@@ -221,7 +222,7 @@ function move(index) {
    dragability()
    //console.log(empty)
    const isFinished = cells.every(cell => {
-      return cell.value === cell.top * game.col + cell.left;
+      return cell.value === cell.top * game.col + cell.left + 1;
    })
 
    if (isFinished) {
@@ -284,7 +285,6 @@ function move(index) {
                   col: game.col
                }
                check[alt.order] = be;
-               check.push(be)
             } else if (clicks.count === alt.turns) {
                if (timer.min < alt.min) {
                   let be = {
@@ -294,7 +294,6 @@ function move(index) {
                      col: game.col
                   }
                   check[alt.order] = be;
-                  check.push(be)
                }
             }
          }
@@ -340,35 +339,30 @@ function dragability() {
 }
 function filling() {
    cells = []
-   cells.push(empty);
    cellSize = document.querySelector(".field").offsetWidth / game.col;
-   let empty_cell = document.createElement("div");
-   empty_cell.className = "empty";
-   empty_cell.style.left = `${empty.left * cellSize}px`
-   empty_cell.style.top = `${empty.top * cellSize}px`
-   document.querySelector(".field").append(empty_cell);
-   document.querySelector(".empty").addEventListener("dragover", dragOver);
-   document.querySelector(".empty").addEventListener("drop", dragDrop);
-   for (let i = 1; i <= game.dimension; i++) {
+   empty.left = game.col - 1;
+   empty.top = game.col - 1;
+   empty.value = game.dimension + 1;
+
+   for (let i = 0; i < game.dimension; i++) {
       const cell = document.createElement("div");
-      const value = numbers[i - 1] + 1;
+      const value = numbers[i] + 1;
       cell.className = "cell";
       cell.innerHTML = value;
       //
+      const left = (i) % game.col;
+      const top = (i - left) / game.col;
       let img = document.createElement("img")
       img.className = "cell__img"
       img.src = "img/1.jpg"
       img.style["z-index"] = "-1"
       img.draggable = false;
-      img.style["background-color"]="black"
+      img.style["background-color"] = "black"
       img.style.width = `${document.querySelector(".field").offsetWidth}px`
-      img.style.left = `-${(value % game.col) * cellSize}px`;
-      img.style.top = `-${(Math.floor(value / game.col)) * cellSize}px`;
+      img.style.left = `-${left * cellSize}px`;
+      img.style.top = `-${top * cellSize}px`;
       cell.append(img)
       //
-      const left = i % game.col;
-      const top = (i - left) / game.col;
-
       cells[i] = ({
          value: value,
          left: left,
@@ -380,13 +374,20 @@ function filling() {
       cell.style.width = `${cellSize}px`
       cell.style.height = `${cellSize}px`
 
-      empty.left = 0;
-      empty.top = 0;
       document.querySelector(".field").append(cell);
       cell.addEventListener('click', () => {
          move(i);
       });
    }
+   let empty_cell = document.createElement("div");
+   empty_cell.className = "empty";
+   empty_cell.style.left = `${empty.left * cellSize}px`
+   empty_cell.style.top = `${empty.top * cellSize}px`
+   empty_cell.style.width = `${cellSize}px`
+   empty_cell.style.height = `${cellSize}px`
+   document.querySelector(".field").append(empty_cell);
+   document.querySelector(".empty").addEventListener("dragover", dragOver);
+   document.querySelector(".empty").addEventListener("drop", dragDrop);
    console.log(cells)
 }
 function bestList() {
@@ -503,12 +504,7 @@ function restart_fun() {
    [].forEach.call(document.querySelectorAll('.cell'), function (e) {
       e.parentNode.removeChild(e);
    });
-   cells[0] = ({
-      value: 0,
-      top: 0,
-      left: 0
-   });
-   shuffle(numbers);
+   //shuffle(numbers);
    empty.top = 0;
    empty.left = 0;
    filling();
@@ -522,12 +518,12 @@ function restart_fun() {
 function savedGames() {
    let col = 0
    for (let key in localStorage) {
-      if (!localStorage.hasOwnProperty(key)) continue;
+      if (!localStorage.hasOwnProperty(key) || key === "best" || key === "lang") continue;
       col++;
    }
    if (col === 0) {
       alert("У вас нет ни одного сохранения! ")
-      return;
+      return ;
    }
    if (document.querySelector(".buttons_block")) document.querySelector(".buttons_block").remove();
    let massive = [];
@@ -624,7 +620,12 @@ function savedGames() {
       saved_del.addEventListener('click', () => {
          localStorage.removeItem(key_name)
          document.querySelector(".saved_block").remove();
-         if (localStorage.length === 0) {
+         let check = 0 ;
+         for (let key in localStorage){
+            if (!localStorage.hasOwnProperty(key) || key === 'best' || key === 'lang') continue;
+            else check++;
+         }
+         if (check === 0) {
             massive = [];
             menu_buttons()
          } else
@@ -677,9 +678,7 @@ function saved_filling(key) {
       e.parentNode.removeChild(e);
    });
    empty.left = key.empty_cell.left;
-   console.log(empty.left)
    empty.top = key.empty_cell.top;
-   cells.push(empty)
    let size = document.querySelector(".field").offsetWidth / key.col;
    let empty_cell = document.createElement("div");
    empty_cell.className = "empty";
@@ -690,13 +689,13 @@ function saved_filling(key) {
    document.querySelector(".field").append(empty_cell);
    document.querySelector(".empty").addEventListener("dragover", dragOver);
    document.querySelector(".empty").addEventListener("drop", dragDrop);
-   for (let i = 0; i <= key.dimension; i++) {
+   for (let i = 0; i < key.dimension; i++) {
       cells[i] = key.whole_cells[i]
    }
-   console.log(cells)
-   for (let i = 1; i <= key.dimension; i++) {
+   for (let i = 0; i < key.dimension; i++) {
       const cell = document.createElement("div");
       const value = cells[i].value;
+      if (value === game.dimension + 1) continue;
       cell.className = "cell";
       cell.innerHTML = value;
 
@@ -706,6 +705,18 @@ function saved_filling(key) {
       cell.style.height = `${size}px`
       cells[i].element = cell;
       document.querySelector(".field").append(cell);
+      const left = (value - 1) % game.col;
+      const top = (value - 1 - left) / game.col;
+      let img = document.createElement("img")
+      img.className = "cell__img"
+      img.src = "img/1.jpg"
+      img.style["z-index"] = "-1"
+      img.draggable = false;
+      img.style["background-color"] = "black"
+      img.style.width = `${document.querySelector(".field").offsetWidth}px`
+      img.style.left = `-${left * size}px`;
+      img.style.top = `-${top * size}px`;
+      cell.append(img)
       cell.addEventListener('click', () => {
          move(i);
       });
