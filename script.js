@@ -343,7 +343,7 @@ function filling() {
    empty.left = game.col - 1;
    empty.top = game.col - 1;
    empty.value = game.dimension + 1;
-
+console.log(numbers)
    for (let i = 0; i < game.dimension; i++) {
       const cell = document.createElement("div");
       const value = numbers[i] + 1;
@@ -359,8 +359,8 @@ function filling() {
       img.draggable = false;
       img.style["background-color"] = "black"
       img.style.width = `${document.querySelector(".field").offsetWidth}px`
-      img.style.left = `-${left * cellSize}px`;
-      img.style.top = `-${top * cellSize}px`;
+      img.style.left = `-${((value-1) % game.col) * cellSize}px`;
+      img.style.top = `-${((value-1 - left) / game.col) * cellSize}px`;
       cell.append(img)
       //
       cells[i] = ({
@@ -504,9 +504,7 @@ function restart_fun() {
    [].forEach.call(document.querySelectorAll('.cell'), function (e) {
       e.parentNode.removeChild(e);
    });
-   //shuffle(numbers);
-   empty.top = 0;
-   empty.left = 0;
+   shuffle(numbers);
    filling();
    dragability();
    [].forEach.call(document.querySelectorAll('.cell'), function (e) {
