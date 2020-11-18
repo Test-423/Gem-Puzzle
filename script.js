@@ -20,7 +20,8 @@ const volume = {
 }
 const game = {
    dimension: 0,
-   col: 0
+   col: 0,
+   lang: "En"
 }
 const color = ["rgb(54, 255, 36)", "rgb(142, 255, 36)", "rgb(215, 255, 36)", "rgb(255, 240, 36)", "rgb(255, 197, 36)", "rgb(255, 153, 36)", "rgb(255, 105, 36)", "rgb(255, 62, 36)", "rgb(255, 36, 138)", "rgb(255, 36, 226)"]
 let drag_status;
@@ -81,60 +82,79 @@ function menu_render() {
 menu_render();
 
 function menu_buttons() {
+   if (localStorage.getItem("lang")) game.lang = localStorage.getItem("lang")
+   console.log(game.lang)
    let buttons_block = document.createElement("div");
    buttons_block.className = "buttons_block"
    document.querySelector(".menu").append(buttons_block);
    let restart_box = document.createElement("button");
    restart_box.className = "restart";
    if (menu_stat.start === true) {
-      restart_box.innerHTML = "Restart";
+      restart_box.innerHTML = (game.lang === "Ru") ? "Перезапуск" : "Restart";
    }
    else {
-      restart_box.innerHTML = "New Game";
-     // restart_box.style.height = "70px";
+      restart_box.innerHTML = (game.lang === "Ru") ? "Новая игра" : "New Game";
+
    }
    document.querySelector(".buttons_block").append(restart_box);
    document.querySelector(".restart").addEventListener("click", change_dimension);
    let saved_games = document.createElement("button")
    saved_games.className = "loadgames"
-   saved_games.innerHTML = "Saved Games"
-   //saved_games.style.height = "70px"
+   saved_games.innerHTML = (game.lang === "Ru") ? "Сохраненные игры" : "Saved Games"
    document.querySelector(".buttons_block").append(saved_games);
    document.querySelector(".loadgames").addEventListener("click", savedGames);
    let best = document.createElement("button")
    best.className = "best"
-   best.innerHTML = "Score List"
-   //best.style.width = "130px"
+   best.innerHTML = (game.lang === "Ru") ? "Лучший результат" : "Score List"
    document.querySelector(".buttons_block").append(best)
    document.querySelector(".best").addEventListener("click", bestList)
    if (menu_stat.continue === true) {
       let cont_box = document.createElement("button");
       cont_box.className = "continue";
-      cont_box.innerHTML = "Continue";
+      cont_box.innerHTML = (game.lang === "Ru") ? "Продолжить" : "Continue";
       document.querySelector(".buttons_block").append(cont_box);
       document.querySelector(".continue").addEventListener("click", continue_button);
       if (clicks.isWin === false) {
          let saving = document.createElement("button")
          saving.className = "saving"
-         saving.innerHTML = "Save Game ?"
+         saving.innerHTML = (game.lang === "Ru") ? "Сохранить игру ?" : "Save Game ?"
          //saving.style.height = "70px"
          document.querySelector(".buttons_block").append(saving);
          document.querySelector(".saving").addEventListener("click", saving_func);
       }
    }
+   let vol_lang = document.createElement("div")
+   vol_lang.className = "vol_lang"
+   document.querySelector(".buttons_block").append(vol_lang)
    let volume_button = document.createElement("button")
    volume_button.className = "volume"
    volume_button.style.width = "130px"
-   //volume_button.style["font-size"] = "20px"
-   volume_button.innerHTML = (volume.status === true) ? "Volume: On" : "Volume: Off";
-   document.querySelector(".buttons_block").append(volume_button)
+   volume_button.innerHTML = (game.lang === "Ru") ? (volume.status === true) ? "Звук: Вк" : "Звук: Выкл" : (volume.status === true) ? "Volume: On" : "Volume: Off";
+   document.querySelector(".vol_lang").append(volume_button)
    document.querySelector(".volume").addEventListener("click", () => {
       volume.status = !volume.status
-      document.querySelector(".volume").innerHTML = (volume.status === true) ? "Volume: On" : "Volume: Off";
+      document.querySelector(".volume").innerHTML = (game.lang === "Ru") ? (volume.status === true) ? "Звук: Вк" : "Звук: Выкл" : (volume.status === true) ? "Volume: On" : "Volume: Off";
    })
-}
-//const field = document.querySelector(".field");
+   let lang = document.createElement("button")
+   lang.className = "lang"
+   if (!localStorage.getItem("lang")) {
+      localStorage.setItem("lang", "En")
+      lang.innerHTML = localStorage.getItem("lang")
+   }
+   else {
+      lang.innerHTML = localStorage.getItem("lang");
+   }
+   document.querySelector(".vol_lang").append(lang)
+   document.querySelector(".lang").addEventListener("click", () => {
+      if (localStorage.getItem("lang") === "En") localStorage.setItem("lang", "Ru")
+      else if (localStorage.getItem("lang") === "Ru") localStorage.setItem("lang", "En")
+      document.querySelector(".buttons_block").remove();
+      menu_buttons()
+      document.querySelector(".turning").innerHTML = (game.lang === "Ru") ? `Шаги: ${clicks.count}` : `Turns: ${clicks.count}`;
+      
+   })
 
+}
 const empty = {
    value: 0,
    top: 0,
@@ -184,7 +204,7 @@ function move(index) {
       audio.play();
    }
    clicks.count++;
-   document.querySelector(".turning").innerHTML = `Turns: ${clicks.count}`;
+   document.querySelector(".turning").innerHTML = (game.lang === "Ru") ? `Шагов: ${clicks.count}` : `Turns: ${clicks.count}`;
    //console.log(empty.left)
    cell.element.style.left = `${empty.left * cellSize}px `;
    cell.element.style.top = `${empty.top * cellSize}px `;
@@ -208,7 +228,8 @@ function move(index) {
       menu_stat.continue = false
       let min = (timer.min < 10) ? `0${timer.min}` : `${timer.min}`;
       let sec = (timer.sec < 10) ? `0${timer.sec}` : `${timer.sec}`;
-      alert(`Ура ! Вы решили головоломку за ${min}:${sec} и ${clicks.count} шагов`);
+      if (game.lang === "Ru") alert(`Ура ! Вы решили головоломку за ${min}:${sec} и ${clicks.count} шагов`);
+      else alert(`Nice ! Yo win this game for ${min}:${sec} and ${clicks.count} steps`);
       [].forEach.call(document.querySelectorAll('.cell'), function (e) {
          e.classList.add('unclickable');
       });
@@ -363,7 +384,7 @@ function bestList() {
    document.querySelector(".menu").append(best_block)
    let best_h = document.createElement("div")
    best_h.className = "best__h"
-   best_h.innerHTML = "Score List"
+   best_h.innerHTML = (game.lang === "Ru") ? "Cписок лучших результатов" : "Score List"
    best_block.append(best_h)
    let best_list = document.createElement("div")
    best_list.className = "best__list"
@@ -377,15 +398,15 @@ function bestList() {
          best_list.append(order)
          let turns = document.createElement("span")
          turns.className = "order__turns"
-         turns.innerHTML = `Turns: ${all[i].turns}`
+         turns.innerHTML = (game.lang === "Ru") ? `Шагов: ${all[i].turns}` : `Turns: ${all[i].turns}`
          order.append(turns)
          let min = document.createElement("span")
          min.className = "order__min"
-         min.innerHTML = `Min: ${all[i].min}`
+         min.innerHTML = (game.lang === "Ru") ? `Мин: ${all[i].min}` : `Min: ${all[i].min}`
          order.append(min)
          let sec = document.createElement("span")
          sec.className = "order__sec"
-         sec.innerHTML = `Sec: ${all[i].sec}`
+         sec.innerHTML = (game.lang === "Ru") ? `Сек: ${all[i].sec}` : `Sec: ${all[i].sec}`
          order.append(sec)
          let dim = document.createElement("span")
          dim.className = "order__col"
@@ -452,7 +473,7 @@ function change_dimension() {
 function restart_fun() {
    clicks.count = 0;
    if (clicks.isWin === true) clicks.isWin = !clicks.isWin
-   document.querySelector(".turning").innerHTML = `Turns: ${clicks.count}`;
+   document.querySelector(".turning").innerHTML = (game.lang === "Ru") ? `Шаги: ${clicks.count}` : `Turns: ${clicks.count}`;
    if (menu_stat.continue === false) {
       menu_stat.continue = true;
       menu_stat.start = true;
@@ -475,7 +496,7 @@ function restart_fun() {
       top: 0,
       left: 0
    });
-   //shuffle(numbers);
+   shuffle(numbers);
    empty.top = 0;
    empty.left = 0;
    filling();
@@ -542,7 +563,8 @@ function savedGames() {
    //
 
    for (let key in localStorage) {
-      if (!localStorage.hasOwnProperty(key)) continue;
+      console.log(key)
+      if (!localStorage.hasOwnProperty(key) || key === 'best' || key === 'lang') continue;
       massive.push(JSON.parse(localStorage.getItem(key)))
       let key_name = key;
       key = JSON.parse(localStorage.getItem(key))
@@ -567,17 +589,17 @@ function savedGames() {
       metrics.append(name)
       let turns = document.createElement("span")
       turns.className = "info__turns"
-      turns.innerHTML = `Turns: ${key.turns}`
+      turns.innerHTML = (game.lang === "Ru") ? `Шаги: ${key.turns}` : `Turns: ${key.turns}`
       metrics.append(turns)
       let time = document.createElement("span")
       time.className = "info__time"
       let time_min = (key.min < 10) ? ` 0${key.min}` : `${key.min}`;
       let time_sec = (key.sec < 10) ? ` 0${key.sec}` : `${key.sec}`;
-      time.innerHTML = `Time: ${time_min}:${time_sec}`
+      time.innerHTML = (game.lang === "Ru") ? `Время: ${time_min}:${time_sec}` : `Time: ${time_min}:${time_sec}`
       metrics.append(time)
       let start = document.createElement("button")
       start.className = "card__start"
-      start.innerHTML = "Start ?"
+      start.innerHTML = (game.lang === "Ru") ? "Начать?" : "Start ?"
       info.append(start)
       start.addEventListener('click', () => {
          saved_filling(key)
@@ -585,7 +607,7 @@ function savedGames() {
       })
       let saved_del = document.createElement("button")
       saved_del.className = "card__del"
-      saved_del.innerHTML = "DEL";
+      saved_del.innerHTML = (game.lang === "Ru") ? "Удалить" : "DEL";
       info.append(saved_del)
       saved_del.addEventListener('click', () => {
          localStorage.removeItem(key_name)
@@ -630,7 +652,7 @@ function saved_filling(key) {
    timer.min = key.min;
    timer.sec = key.sec;
    timer.milisec = key.milisec;
-   document.querySelector(".turning").innerHTML = `Turns: ${clicks.count}`;
+   document.querySelector(".turning").innerHTML = (game.lang==="Ru")? `Шаги: ${clicks.count}`:`Turns: ${clicks.count}`;
    console.log(timer.sec)
    console.log(timer.min)
    document.querySelector(".timer__sec").innerHTML = (timer.sec < 10) ? `0${timer.sec}` : `${timer.sec}`;
@@ -695,10 +717,10 @@ function saving_func() {
          col: game.col
       }
       localStorage.setItem(`Save ${localStorage.length + 1}`, JSON.stringify(save))
-      document.querySelector(".saving").innerHTML = "Already saved )"
+      document.querySelector(".saving").innerHTML = (game.lang === "Ru") ? "Уже сохранено)" : "Already saved )"
       setTimeout(() => {
          if (document.querySelector(".saving"))
-            document.querySelector(".saving").innerHTML = "Save Game ?"
+            document.querySelector(".saving").innerHTML = (game.lang === "Ru") ? "Сохранить игру ?" : "Save Game ?"
       }, 2000);
    }
 
@@ -719,7 +741,10 @@ function cleate_pause() {
 function create_turning() {
    let turning = document.createElement("span");
    turning.className = "turning";
-   turning.innerHTML = "Turns: 0";
+   if (localStorage.getItem("lang")) turning.innerHTML = (localStorage.getItem("lang") === "Ru") ? "Шаги: 0" : "Turns: 0";
+   else {
+      turning.innerHTML = "Turns: 0";
+   }
    document.querySelector(".controller__turning").append(turning);
 }
 function continue_button() {
