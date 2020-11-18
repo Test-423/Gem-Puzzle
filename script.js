@@ -46,13 +46,25 @@ const slide = {
    card: 0
 }
 function gamebox_render() {
+   //if(screen.width<"400")
    let game = document.createElement("div");
    game.className = "game";
+   if (screen.width < "400") {
+      game.style.width = `${screen.width}px`;
+   }
    document.body.append(game);
    let gamebox = document.createElement("div");
+   if (screen.width < "400") {
+      gamebox.style.width = `${screen.width}px`
+      gamebox.style.height = `${screen.width + 150}px`
+   }
    gamebox.className = "gamebox";
    game.append(gamebox);
    let field = document.createElement("div");
+   if (screen.width < "400") { 
+      field.style.width = `${screen.width}`;
+      field.style.height = `${screen.width}`;
+   }
    field.className = "field";
    document.querySelector(".gamebox").append(field);
 }
@@ -60,6 +72,10 @@ gamebox_render();
 function controller_render() {
    let bottom_controls = document.createElement("div");
    bottom_controls.className = "controller";
+   if (screen.width < "400") {
+      bottom_controls.style.width = `${screen.width}`
+      bottom_controls.style.height = `${document.querySelector(".game").offsetHeight - document.querySelector(".field").offsetHeight}px`
+      ;}
    document.querySelector(".game").append(bottom_controls);
    let controller__turning = document.createElement("div");
    controller__turning.className = "controller__turning";
@@ -76,6 +92,10 @@ controller_render();
 function menu_render() {
    let menu = document.createElement("div");
    menu.className = "menu";
+   if(screen.width < "400") {
+      menu.style.width = `${screen.width}`
+      menu.style.height = `px`
+   }
    document.querySelector(".game").append(menu);
    menu_buttons()
 }
@@ -360,8 +380,8 @@ function filling() {
       img.draggable = false;
       img.style["background-color"] = "black"
       img.style.width = `${document.querySelector(".field").offsetWidth}px`
-      img.style.left = `-${((value-1) % game.col) * cellSize}px`;
-      img.style.top = `-${((value-1 - ((value-1) % game.col)) / game.col) * cellSize}px`;
+      img.style.left = `-${((value - 1) % game.col) * cellSize}px`;
+      img.style.top = `-${((value - 1 - ((value - 1) % game.col)) / game.col) * cellSize}px`;
       cell.append(img)
       //
       cells[i] = ({
@@ -522,7 +542,7 @@ function savedGames() {
    }
    if (col === 0) {
       alert("У вас нет ни одного сохранения! ")
-      return ;
+      return;
    }
    if (document.querySelector(".buttons_block")) document.querySelector(".buttons_block").remove();
    let massive = [];
@@ -619,8 +639,8 @@ function savedGames() {
       saved_del.addEventListener('click', () => {
          localStorage.removeItem(key_name)
          document.querySelector(".saved_block").remove();
-         let check = 0 ;
-         for (let key in localStorage){
+         let check = 0;
+         for (let key in localStorage) {
             if (!localStorage.hasOwnProperty(key) || key === 'best' || key === 'lang') continue;
             else check++;
          }
