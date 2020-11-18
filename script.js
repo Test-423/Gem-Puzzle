@@ -151,7 +151,7 @@ function menu_buttons() {
       document.querySelector(".buttons_block").remove();
       menu_buttons()
       document.querySelector(".turning").innerHTML = (game.lang === "Ru") ? `Шаги: ${clicks.count}` : `Turns: ${clicks.count}`;
-      
+
    })
 
 }
@@ -354,6 +354,18 @@ function filling() {
       const value = numbers[i - 1] + 1;
       cell.className = "cell";
       cell.innerHTML = value;
+      //
+      let img = document.createElement("img")
+      img.className = "cell__img"
+      img.src = "img/1.jpg"
+      img.style["z-index"] = "-1"
+      img.draggable = false;
+      img.style["background-color"]="black"
+      img.style.width = `${document.querySelector(".field").offsetWidth}px`
+      img.style.left = `-${(value % game.col) * cellSize}px`;
+      img.style.top = `-${(Math.floor(value / game.col)) * cellSize}px`;
+      cell.append(img)
+      //
       const left = i % game.col;
       const top = (i - left) / game.col;
 
@@ -652,7 +664,7 @@ function saved_filling(key) {
    timer.min = key.min;
    timer.sec = key.sec;
    timer.milisec = key.milisec;
-   document.querySelector(".turning").innerHTML = (game.lang==="Ru")? `Шаги: ${clicks.count}`:`Turns: ${clicks.count}`;
+   document.querySelector(".turning").innerHTML = (game.lang === "Ru") ? `Шаги: ${clicks.count}` : `Turns: ${clicks.count}`;
    console.log(timer.sec)
    console.log(timer.min)
    document.querySelector(".timer__sec").innerHTML = (timer.sec < 10) ? `0${timer.sec}` : `${timer.sec}`;

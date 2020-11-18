@@ -1,5 +1,6 @@
 * {
   margin: 0;
+  z-index: 1;
 }
 
 body {
@@ -71,7 +72,9 @@ body {
 }
 
 .cell {
-  background-color: rgba(77, 255, 0, 0.384);
+  overflow: hidden;
+  position: relative;
+  background-color: rgba(0, 0, 0, 0.945);
   border: 2px solid #1e1e1f;
   border-radius: 10px;
   position: absolute;
@@ -89,7 +92,15 @@ body {
           align-items: center;
   -webkit-transition: all 0.4s;
   transition: all 0.4s;
+  z-index: 1;
   cursor: pointer;
+}
+
+.cell__img {
+  position: absolute;
+  z-index: -1;
+  -o-object-fit: cover;
+     object-fit: cover;
 }
 
 .microcell {
@@ -190,6 +201,8 @@ body {
 }
 
 .dimension__cell {
+  overflow: hidden;
+  position: relative;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
