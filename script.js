@@ -343,7 +343,8 @@ function filling() {
    empty.left = game.col - 1;
    empty.top = game.col - 1;
    empty.value = game.dimension + 1;
-console.log(numbers)
+   let gust = Math.floor(1 + Math.random() * (18 + 1 - 1))
+   console.log(gust)
    for (let i = 0; i < game.dimension; i++) {
       const cell = document.createElement("div");
       const value = numbers[i] + 1;
@@ -354,7 +355,7 @@ console.log(numbers)
       const top = (i - left) / game.col;
       let img = document.createElement("img")
       img.className = "cell__img"
-      img.src = "img/1.jpg"
+      img.src = `img/${gust}.jpg`
       img.style["z-index"] = "-1"
       img.draggable = false;
       img.style["background-color"] = "black"
