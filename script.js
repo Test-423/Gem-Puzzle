@@ -360,7 +360,7 @@ console.log(numbers)
       img.style["background-color"] = "black"
       img.style.width = `${document.querySelector(".field").offsetWidth}px`
       img.style.left = `-${((value-1) % game.col) * cellSize}px`;
-      img.style.top = `-${((value-1 - left) / game.col) * cellSize}px`;
+      img.style.top = `-${((value-1 - ((value-1) % game.col)) / game.col) * cellSize}px`;
       cell.append(img)
       //
       cells[i] = ({
