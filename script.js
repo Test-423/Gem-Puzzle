@@ -29,14 +29,14 @@ const dragOver = function (evt) {
    evt.preventDefault();
 }
 const dragDrop = function (event) {
-   console.log(drag_status.textContent)
-   for (let i = 1; i < 16; i++) {
+   for (let i = 1; i < game.dimension; i++) {
+      
       if (drag_status.textContent === `${cells[i].value}`) move(i)
    }
 }
 const dragStart = function () {
    drag_status = this;
-   console.log(drag_status)
+   //console.log(drag_status)
 }
 const dragEnd = function () {
    drag_status = 0;
@@ -61,7 +61,7 @@ function gamebox_render() {
    gamebox.className = "gamebox";
    game.append(gamebox);
    let field = document.createElement("div");
-   if (screen.width < "400") { 
+   if (screen.width < "400") {
       field.style.width = `${screen.width}`;
       field.style.height = `${screen.width}`;
    }
@@ -75,7 +75,8 @@ function controller_render() {
    if (screen.width < "400") {
       bottom_controls.style.width = `${screen.width}`
       bottom_controls.style.height = `${document.querySelector(".game").offsetHeight - document.querySelector(".field").offsetHeight}px`
-      ;}
+         ;
+   }
    document.querySelector(".game").append(bottom_controls);
    let controller__turning = document.createElement("div");
    controller__turning.className = "controller__turning";
@@ -92,7 +93,7 @@ controller_render();
 function menu_render() {
    let menu = document.createElement("div");
    menu.className = "menu";
-   if(screen.width < "400") {
+   if (screen.width < "400") {
       menu.style.width = `${screen.width}`
       menu.style.height = `px`
    }
@@ -103,7 +104,7 @@ menu_render();
 
 function menu_buttons() {
    if (localStorage.getItem("lang")) game.lang = localStorage.getItem("lang")
-   console.log(game.lang)
+   //console.log(game.lang)
    let buttons_block = document.createElement("div");
    buttons_block.className = "buttons_block"
    document.querySelector(".menu").append(buttons_block);
@@ -205,13 +206,11 @@ function gameDimension(n) {
    else {
       game.dimension = 8
    }
-   console.log(game.dimension)
+   //console.log(game.dimension)
 }
 gameDimension(4)
 let cellSize = document.querySelector(".field").offsetWidth / game.col;
-console.log(cellSize)
 function move(index) {
-   console.log(cells)
    cellSize = document.querySelector(".field").offsetWidth / game.col;
    const cell = cells[index];
 
@@ -329,7 +328,6 @@ function move(index) {
          console.log(localStorage.getItem("best"))
       }
    }
-
 }
 //
 let numbers = [...Array(game.dimension).keys()]
@@ -345,7 +343,7 @@ function dragability() {
       topDif = Math.abs(empty.top - cell.top);
       if ((leftDif + topDif === 1)) list.push(cell.value);
    }
-   console.log(list)
+   //console.log(list)
    for (let cell of all_cells) {
       cell.draggable = false;
       for (let i = 0; i < list.length; i++) {
@@ -364,7 +362,7 @@ function filling() {
    empty.top = game.col - 1;
    empty.value = game.dimension + 1;
    let gust = Math.floor(1 + Math.random() * (18 + 1 - 1))
-   console.log(gust)
+   //console.log(gust)
    for (let i = 0; i < game.dimension; i++) {
       const cell = document.createElement("div");
       const value = numbers[i] + 1;
@@ -409,7 +407,7 @@ function filling() {
    document.querySelector(".field").append(empty_cell);
    document.querySelector(".empty").addEventListener("dragover", dragOver);
    document.querySelector(".empty").addEventListener("drop", dragDrop);
-   console.log(cells)
+   //console.log(cells)
 }
 function bestList() {
    document.querySelector(".buttons_block").remove();
